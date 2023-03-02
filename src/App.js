@@ -24,7 +24,7 @@ function LotteryInput({
   disableInputs,
 }) {
   const [checkboxValues, setCheckboxValues] = useState([false, false, false, false, false]);
-  const [inputValues, setInputValues] = useState(['1', '2', '3', '4', '5']);
+  const [inputValues, setInputValues] = useState([1, 2, 3, 4, 5]);
 
   useEffect(() => {
     onValuesChange(inputValues);
@@ -33,14 +33,14 @@ function LotteryInput({
   const handleCheckBox = (event, index) => {
     const { checked } = event.target;
     if (checked) {
-      const randomValue = getLotteryNumbers(1, 90, 90).find((n) => !inputValues.includes(`${n}`));
-      setInputValues((prevValues) => prevValues.map((v, i) => `${i === index ? randomValue : v}`));
+      const randomValue = getLotteryNumbers(1, 90, 90).find((n) => !inputValues.includes(n));
+      setInputValues((prevValues) => prevValues.map((v, i) => i === index ? randomValue : v));
     }
     setCheckboxValues((prevValues) => prevValues.map((v, i) => i === index ? checked : v));
   };
 
   const handleInput = (event, index) => {
-    const { value } = event.target;
+    const value = parseInt(event.target.value);
     setInputValues((prevValues) => prevValues.map((v, i) => i === index ? value : v));
   };
 
@@ -132,34 +132,43 @@ function LotteryInput({
 
 function App() {
   const [intervalFn, setIntervalFn] = useState(null);
-  const [simCycleCount, setSimCycleCount] = useState(2253);
+  const [simCycleCount, setSimCycleCount] = useState(0);
   const [isSimRunning, setIsSimRunning] = useState(false);
   const [simCycleMs, setSimCycleMs] = useState(300);
   const [lotteryNumbers, setLotteryNumbers] = useState([]);
   const [yourNumbers, setYourNumbers] = useState([]);
+  const [matches, setMatches] = useState({
+    '2': 0,
+    '3': 0,
+    '4': 0,
+    '5': 0,
+  });
+
   const yearsSpent = Math.round(simCycleCount / 52);
   const moneySpent = simCycleCount * TICKET_PRICE;
-  const matches = {
-    'two': 57,
-    'three': 1,
-    'four': 0,
-    'five': 0,
-  };
 
   useEffect(() => {
+    clearInterval(intervalFn);
     if (isSimRunning) {
-      clearInterval(intervalFn);
-      const interval = setInterval(() => {
+      setIntervalFn(setInterval(() => {
         setLotteryNumbers(getLotteryNumbers())
         setSimCycleCount((prevCount) => prevCount + 1);
-      }, simCycleMs);
-      setIntervalFn(interval);
-    } else if (intervalFn) {
-      clearInterval(intervalFn);
+      }, simCycleMs));
     }
-
     return () => clearInterval(intervalFn);
-  }, [isSimRunning, simCycleMs])
+  }, [isSimRunning])
+
+  useEffect(() => {
+    const nMatch = lotteryNumbers.filter((n) => yourNumbers.includes(n))
+    if (nMatch.length >= 2) {
+      setMatches((prevMatches) => {
+        return {
+          ...prevMatches,
+          [nMatch.length]: prevMatches[nMatch.length] + 1,
+        };
+      });
+    }
+  }, [lotteryNumbers])
 
   const toggleSim = () => {
     setIsSimRunning((prevState) => !prevState);
@@ -167,6 +176,13 @@ function App() {
 
   const resetSim = () => {
     setSimCycleCount(0);
+    setLotteryNumbers([]);
+    setMatches({
+      '2': 0,
+      '3': 0,
+      '4': 0,
+      '5': 0,
+    })
   };
 
   const handleSetCycleSpeed = (e) => {
@@ -190,10 +206,10 @@ function App() {
       <ul>
         <li>Lottery: {simCycleCount}</li>
         <li>Years spent: {yearsSpent}</li>
-        <li>2 matches: {matches.two}</li>
-        <li>3 matches: {matches.three}</li>
-        <li>4 matches: {matches.four}</li>
-        <li>5 matches: {matches.five}</li>
+        <li>2 matches: {matches['2']}</li>
+        <li>3 matches: {matches['3']}</li>
+        <li>4 matches: {matches['4']}</li>
+        <li>5 matches: {matches['5']}</li>
       </ul>
       <h2>Lottery numbers</h2>
       <div>
@@ -210,6 +226,7 @@ function App() {
         max={SIM_CYCLE_RANGE[1]}
         value={simCycleMs}
         onChange={handleSetCycleSpeed}
+        disabled={isSimRunning}
       />
       <div>
         <button onClick={toggleSim} disabled={!validateInput()}>{isSimRunning ? 'Pause' : 'Start'}</button>
