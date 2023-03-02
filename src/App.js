@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import getLotteryNumbers from './utils/getLotteryNumbers';
+import validateInputs from './utils/validateInputs';
 import LotteryInput from './components/LotteryInput';
 import './App.scss';
 
@@ -44,6 +45,9 @@ function App() {
         };
       });
     }
+    if (nMatch.length === 5) {
+      setIsSimRunning(false);
+    }
   }, [lotteryNumbers])
 
   const toggleSim = () => {
@@ -69,31 +73,24 @@ function App() {
     setYourNumbers(v);
   }
 
-  const validateInput = () => {
-    return yourNumbers.every((v) => {
-      const n = parseInt(v);
-      return n >= 1 && n <= 90;
-    });
-  };
-
   return (
     <main className="App">
       <h1>Lottery simulator</h1>
       <ul>
-        <li>Lottery: {simCycleCount}</li>
+        <li>Lottery tickets: {simCycleCount}</li>
         <li>Years spent: {yearsSpent}</li>
         <li>2 matches: {matches['2']}</li>
         <li>3 matches: {matches['3']}</li>
         <li>4 matches: {matches['4']}</li>
-        <li>5 matches: {matches['5']}</li>
+        <li className={matches['5'] >= 1 ? 'decorated' : ''}>5 matches: {matches['5']}</li>
       </ul>
       <h2>Lottery numbers</h2>
       <div>
-        {lotteryNumbers.join(', ')}
+        {lotteryNumbers.join(', ') || '-'}
       </div>
       <h2>Your numbers</h2>
       <LotteryInput onValuesChange={handleLotteryInput} disableInputs={isSimRunning}/>
-      <div>Total money spent on tickets: {moneySpent} Ft</div>
+      <small>Total money spent on tickets: {moneySpent} Ft</small>
       <h2>Speed ({simCycleMs}ms)</h2>
       <input
         type="range"
@@ -104,8 +101,8 @@ function App() {
         onChange={handleSetCycleSpeed}
         disabled={isSimRunning}
       />
-      <div>
-        <button onClick={toggleSim} disabled={!validateInput()}>{isSimRunning ? 'Pause' : 'Start'}</button>
+      <div className="btn-row">
+        <button onClick={toggleSim} disabled={!validateInputs(yourNumbers)}>{isSimRunning ? 'Pause' : 'Start'}</button>
         {!isSimRunning && (
           <button onClick={resetSim}>Reset</button>
         )}
