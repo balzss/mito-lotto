@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import getLotteryNumbers from './utils/getLotteryNumbers';
 import validateInputs from './utils/validateInputs';
