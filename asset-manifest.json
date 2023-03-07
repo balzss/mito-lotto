@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/mito-lotto/static/css/main.af74d9b0.css",
+    "main.js": "/mito-lotto/static/js/main.a9829d75.js",
+    "static/js/787.869ae987.chunk.js": "/mito-lotto/static/js/787.869ae987.chunk.js",
+    "index.html": "/mito-lotto/index.html",
+    "main.af74d9b0.css.map": "/mito-lotto/static/css/main.af74d9b0.css.map",
+    "main.a9829d75.js.map": "/mito-lotto/static/js/main.a9829d75.js.map",
+    "787.869ae987.chunk.js.map": "/mito-lotto/static/js/787.869ae987.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.af74d9b0.css",
+    "static/js/main.a9829d75.js"
+  ]
+}
