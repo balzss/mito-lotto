@@ -1,5 +1,6 @@
 {
   "name": "lotto",
+  "homepage": "https://balzss.github.io/mito-lotto/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
